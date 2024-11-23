@@ -14,6 +14,14 @@
         android:theme="@style/Theme.CryptoPriceWidget"
         tools:targetApi="34" >
         <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".WidgetConfigActivity"
             android:exported="false">
         </activity>
@@ -22,10 +30,8 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <!-- Corrected the action name to match the one in your code -->
-                <action android:name="com.jlarrieux.cryptowidget.REFRESH" />
-                <!-- If you handle SETTINGS_ACTION in the manifest, add it here -->
-                <action android:name="com.jlarrieux.cryptowidget.SETTINGS" />
+                <action android:name="com.jlarrieux.cryptopricewidget.REFRESH" />
+                <action android:name="com.jlarrieux.cryptopricewidget.SETTINGS" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"

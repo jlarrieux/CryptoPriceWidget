@@ -14,6 +14,14 @@ import java.util.List;
 
 public class WidgetConfigActivity extends AppCompatActivity {
     private EditText coinsEditText;
+    private PreferencesManager preferencesManager;
+
+    private PreferencesManager getPreferencesManager(){
+        if(preferencesManager == null){
+            preferencesManager = new PreferencesManager(this);
+        }
+        return preferencesManager;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +31,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
         coinsEditText = findViewById(R.id.coins_edit_text);
 
         // Load current coins
-        List<String> currentCoins = CryptoWidgetProvider.getWatchlistCoins(this);
+        List<String> currentCoins = getPreferencesManager().getWatchlistCoins();
         coinsEditText.setText(String.join(",", currentCoins));
 
         findViewById(R.id.save_button).setOnClickListener(v -> saveConfiguration());
@@ -44,7 +52,7 @@ public class WidgetConfigActivity extends AppCompatActivity {
         coins.replaceAll(String::toLowerCase);
 
         // Save the coins
-        CryptoWidgetProvider.setWatchlistCoins(this, coins);
+        getPreferencesManager().setWatchlistCoins(coins);
 
         // Update all widgets
         AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
