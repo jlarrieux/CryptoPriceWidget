@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CryptoPriceWidget"
+        tools:targetApi="34" >
+        <activity
+            android:name=".WidgetConfigActivity"
+            android:exported="false">
+        </activity>
+        <receiver
+            android:name=".CryptoWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- Corrected the action name to match the one in your code -->
+                <action android:name="com.jlarrieux.cryptowidget.REFRESH" />
+                <!-- If you handle SETTINGS_ACTION in the manifest, add it here -->
+                <action android:name="com.jlarrieux.cryptowidget.SETTINGS" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/crypto_widget_info" />
+        </receiver>
+
+    </application>
+
+</manifest>

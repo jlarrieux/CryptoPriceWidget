@@ -1,0 +1,71 @@
+plugins {
+    id 'com.android.application'
+}
+
+def getApiKey() {
+    def localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        Properties properties = new Properties()
+        localPropertiesFile.withInputStream { properties.load(it) }
+        return properties.getProperty('COINGECKO_API_KEY', '')
+    }
+    return ''
+}
+
+android {
+    namespace 'com.jlarrieux.cryptopricewidget'
+    compileSdk 34  // Updated to 34 to match dependency requirements
+
+    buildFeatures {
+        buildConfig true  // Enable BuildConfig generation
+    }
+
+    defaultConfig {
+        applicationId "com.jlarrieux.cryptopricewidget"
+        minSdk 33
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField "String", "COINGECKO_API_KEY", "\"${getApiKey()}\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // AndroidX Core (using stable versions)
+    implementation 'androidx.core:core:1.12.0'  // Changed from 1.15.0
+    implementation 'androidx.appcompat:appcompat:1.6.1'  // Changed from 1.7.0
+
+    // Material Design
+    implementation 'com.google.android.material:material:1.10.0'
+
+    // Network
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    // JSON Parsing
+    implementation 'com.google.code.gson:gson:2.10.1'
+
+    // Glide for loading images
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
+
+    // AWS calls
+    implementation 'com.amazonaws:aws-android-sdk-core:2.77.1'
+    implementation 'com.amazonaws:aws-android-sdk-cognito:2.20.1'
+
+    // Testing
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'  // Changed from 1.2.1
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'  // Changed from 3.6.1
+}

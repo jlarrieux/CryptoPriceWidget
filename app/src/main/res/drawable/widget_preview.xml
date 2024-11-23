@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="110dp"
+    android:viewportWidth="180"
+    android:viewportHeight="110">
+
+    <!-- Widget background -->
+    <path
+        android:fillColor="#DD000000"
+        android:pathData="M0,0h180v110h-180z"/>
+
+    <!-- Title text placeholder -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,20h100v8h-100z"/>
+
+    <!-- Refresh button placeholder -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M150,15h20v20h-20z"/>
+
+    <!-- Price rows placeholders -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,40h160v10h-160z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,60h160v10h-160z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,80h160v10h-160z"/>
+</vector>
