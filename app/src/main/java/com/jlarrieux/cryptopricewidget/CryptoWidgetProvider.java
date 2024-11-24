@@ -34,6 +34,7 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
     private CryptoPriceFetcher cryptoPriceFetcher;
     private static final OkHttpClient client = new OkHttpClient();
     private PreferencesManager preferencesManager;
+    RemoteViews errorViews;
 
     private CryptoPriceFetcher getCryptoPriceFetcher(String apiKey) {
         if (cryptoPriceFetcher == null) {
@@ -114,6 +115,8 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
         List<String> coins = getPreferencesManager(context).getWatchlistCoins();
 
         executor.execute(() -> {
+            // Update widget to show error message
+            RemoteViews errorViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             try {
                 List<CryptoPriceRecord> prices = getCryptoPriceFetcher(API_KEY).fetchPrices(coins);
 
@@ -137,13 +140,15 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
                     updateViews.addView(R.id.price_container, priceView);
                 }
 
+                //clear any previous error message on successful loading.
+                errorViews.setTextViewText(R.id.error_text, "");
+                appWidgetManager.updateAppWidget(appWidgetId, errorViews);
                 appWidgetManager.updateAppWidget(appWidgetId, updateViews);
             } catch (Exception e) {
                 // Log the exception
                 Log.e("CryptoWidgetProvider", String.format("Error updating widget: %s", e.toString()), e);
 
-                // Update widget to show error message
-                RemoteViews errorViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+
                 errorViews.setOnClickPendingIntent(R.id.refresh_button, refreshPendingIntent);
                 errorViews.setOnClickPendingIntent(R.id.settings_button, settingsPendingIntent);
                 errorViews.setViewVisibility(R.id.progress_bar, View.GONE);
