@@ -17,13 +17,22 @@ import com.jlarrieux.cryptopricewidget.providerhelper.WidgetViewFactory;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 
 public class CryptoWidgetProvider extends AppWidgetProvider {
     private static final String API_KEY = BuildConfig.COINGECKO_API_KEY;
     public static final String REFRESH_ACTION = "com.jlarrieux.cryptowidget.REFRESH";
     public static final String SETTINGS_ACTION = "com.jlarrieux.cryptowidget.SETTINGS";
-    private static final Executor executor = Executors.newSingleThreadExecutor();
+    private static final Executor executor = new ThreadPoolExecutor(
+            Runtime.getRuntime().availableProcessors(),  // core pool size
+            Runtime.getRuntime().availableProcessors() * 2,  // max pool size
+            60L,  // keep alive time
+            TimeUnit.SECONDS,
+            new LinkedBlockingQueue<>()
+    );;
     private CryptoPriceFetcher cryptoPriceFetcher;
     private PreferencesManager preferencesManager;
 

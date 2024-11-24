@@ -4,4 +4,8 @@
     <string name="crypto_prices">Crypto Prices</string>
     <string name="error_loading_prices">Error loading prices</string>
     <string name="refreshing">Refreshing...</string>
+    <string name="_1h">1h: </string>
+    <string name="_4h">4h: </string>
+    <string name="_24h">24h: </string>
+    <string name="divider_as_imageview_instead_of_view">Divider as imageView instead of view</string>
 </resources>

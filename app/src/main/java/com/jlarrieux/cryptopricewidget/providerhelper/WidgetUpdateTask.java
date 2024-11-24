@@ -3,12 +3,14 @@ package com.jlarrieux.cryptopricewidget.providerhelper;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
 
 import com.jlarrieux.cryptopricewidget.record.CryptoPriceRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferencesRecord;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class WidgetUpdateTask implements Runnable {
     private final Context context;
@@ -32,10 +34,36 @@ public class WidgetUpdateTask implements Runnable {
     @Override
     public void run() {
         try {
+            // First get current prices
             List<CryptoPriceRecord> prices = cryptoPriceFetcher.fetchPrices(coins);
-            // Perform any additional data processing if needed
 
-            RemoteViews updateViews = WidgetViewFactory.createSuccessView(context, prices, pendingIntentFactory);
+            // For each coin, fetch OHLC and calculate differences
+            List<CompletableFuture<PercentDifferencesRecord>> ohlcFutures = new ArrayList<>();
+            for(CryptoPriceRecord price : prices) {
+                CompletableFuture<PercentDifferencesRecord> future = CompletableFuture.supplyAsync(() -> {
+                    try {
+                        String ohlcData = cryptoPriceFetcher.fetchOHLC(price.symbol());
+                        return OHLCAnalysis.computePercentDifferences(ohlcData, price.price());
+                    } catch (Exception e) {
+                        Log.e("WidgetUpdateTask", "Error fetching OHLC for " + price.symbol(), e);
+                        return null;
+                    }
+                });
+                ohlcFutures.add(future);
+            }
+
+            // Wait for all OHLC data to be fetched
+            CompletableFuture.allOf(ohlcFutures.toArray(new CompletableFuture[0])).join();
+
+            // Combine price records with their analysis
+            List<CoinAnalysisRecord> analysisResults = new ArrayList<>();
+            for(int i = 0; i < prices.size(); i++) {
+                CryptoPriceRecord price = prices.get(i);
+                PercentDifferencesRecord diffs = ohlcFutures.get(i).get();
+                analysisResults.add(new CoinAnalysisRecord(price, diffs));
+            }
+
+            RemoteViews updateViews = WidgetViewFactory.createSuccessView(context, analysisResults, pendingIntentFactory);
             appWidgetManager.updateAppWidget(appWidgetId, updateViews);
         } catch (Exception e) {
             Log.e("WidgetUpdateTask", "Error updating widget", e);
