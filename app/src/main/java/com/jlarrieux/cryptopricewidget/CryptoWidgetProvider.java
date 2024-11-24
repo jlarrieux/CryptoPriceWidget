@@ -72,6 +72,8 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
     private void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean animate) {
         Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, "About to update widget");
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+        // Set the background
+        views.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_background);
 
         // Set up refresh button
         Intent refreshIntent = new Intent(context, CryptoWidgetProvider.class);
@@ -106,11 +108,13 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
         executor.execute(() -> {
             // Update widget to show error message
             RemoteViews errorViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+            errorViews.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_background);
             try {
                 List<CryptoPriceRecord> prices = getCryptoPriceFetcher(API_KEY).fetchPrices(coins);
 
                 // Create new RemoteViews for the update
                 RemoteViews updateViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+                updateViews.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_background);
 
                 // Set up both button click handlers again
                 updateViews.setOnClickPendingIntent(R.id.refresh_button, refreshPendingIntent);
