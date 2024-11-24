@@ -28,18 +28,17 @@ public class CryptoPriceFetcher {
     public List<CryptoPriceRecord> fetchPrices(List<String> coins) throws IOException, JSONException {
         String coinIds = URLEncoder.encode(String.join(",", coins), StandardCharsets.UTF_8.toString());
         String url = BASE_URL + "/simple/price?ids=" + coinIds + "&vs_currencies=usd" + "&x_cg_pro_api_key=" + apiKey;
-        Log.i("CryptoPriceWidget", "Request URL: " + url);
+        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("url: %s", url));
 
         Request request = new Request.Builder()
                 .url(url)
-                // Remove the header since we're using query parameter
-                //.addHeader("x-cg-pro-api-key", apiKey)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) throw new IOException("Unexpected response: " + response);
 
             String responseBody = response.body().string();
+            Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("responseBody: %s", responseBody));
             return parsePrices(responseBody, coins);
         }
     }

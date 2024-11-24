@@ -5,36 +5,23 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class CryptoWidgetProvider extends AppWidgetProvider {
-    private static final String BASE_URL = "https://pro-api.coingecko.com/api/v3";
     private static final String API_KEY = BuildConfig.COINGECKO_API_KEY;
     public static final String REFRESH_ACTION = "com.jlarrieux.cryptowidget.REFRESH";
     private static final String SETTINGS_ACTION = "com.jlarrieux.cryptowidget.SETTINGS";
 
     private static final Executor executor = Executors.newSingleThreadExecutor();
     private CryptoPriceFetcher cryptoPriceFetcher;
-    private static final OkHttpClient client = new OkHttpClient();
     private PreferencesManager preferencesManager;
-    RemoteViews errorViews;
 
     private CryptoPriceFetcher getCryptoPriceFetcher(String apiKey) {
         if (cryptoPriceFetcher == null) {
@@ -59,6 +46,7 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("OnReceive called with action: %s", intent.getAction()));
         super.onReceive(context, intent);
         String action = intent.getAction();
         if (action != null) {
@@ -82,6 +70,7 @@ public class CryptoWidgetProvider extends AppWidgetProvider {
 
 
     private void updateWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId, boolean animate) {
+        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, "About to update widget");
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
         // Set up refresh button
