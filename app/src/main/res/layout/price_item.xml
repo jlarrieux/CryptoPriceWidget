@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="#FFFFFF"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_size_medium"
             android:textStyle="bold" />
 
         <TextView
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:text="@string/_24h"
             android:textColor="#888888"
-            android:textSize="12sp" />
+            android:textSize="@dimen/text_size_small" />
         <TextView
             android:layout_width="4dp"
             android:layout_height="wrap_content" />
@@ -51,7 +51,7 @@
             android:id="@+id/diff_24h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="#FFFFFF" />
 
         <!-- Spacer -->
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:text="@string/_4h"
             android:textColor="#888888"
-            android:textSize="12sp" />
+            android:textSize="@dimen/text_size_small" />
         <TextView
             android:layout_width="4dp"
             android:layout_height="wrap_content" />
@@ -74,7 +74,7 @@
             android:id="@+id/diff_4h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="#FFFFFF" />
 
         <!-- Spacer -->
@@ -88,7 +88,7 @@
             android:layout_height="wrap_content"
             android:text="@string/_1h"
             android:textColor="#888888"
-            android:textSize="12sp" />
+            android:textSize="@dimen/text_size_small" />
         <TextView
             android:layout_width="4dp"
             android:layout_height="wrap_content" />
@@ -97,7 +97,7 @@
             android:id="@+id/diff_1h"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_size_small"
             android:textColor="#FFFFFF" />
     </LinearLayout>
 
