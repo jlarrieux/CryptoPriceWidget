@@ -1,4 +1,4 @@
-package com.jlarrieux.cryptopricewidget;
+package com.jlarrieux.cryptopricewidget.providerhelper;
 
 import android.content.Context;
 import android.content.SharedPreferences;

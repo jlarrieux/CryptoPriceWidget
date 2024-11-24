@@ -9,6 +9,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.jlarrieux.cryptopricewidget.providerhelper.PreferencesManager;
+
 import java.util.Arrays;
 import java.util.List;
 
