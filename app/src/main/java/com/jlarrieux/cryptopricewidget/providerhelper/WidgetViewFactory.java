@@ -3,8 +3,10 @@ package com.jlarrieux.cryptopricewidget.providerhelper;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.jlarrieux.cryptopricewidget.CryptoPriceWidgetUtils;
 import com.jlarrieux.cryptopricewidget.R;
@@ -80,7 +82,9 @@ public class WidgetViewFactory {
         views.setViewVisibility(R.id.progress_bar, View.GONE);
         views.setViewVisibility(R.id.price_container, View.GONE);
         views.setViewVisibility(R.id.error_text, View.VISIBLE);
-        views.setTextViewText(R.id.error_text, "Error: " + errorMessage);
+        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("jeannius e: %s", errorMessage));
+        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("jeannius message: %s", errorMessage));
+        views.setTextViewText(R.id.error_text, errorMessage);
         return views;
     }
 

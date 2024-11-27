@@ -62,7 +62,11 @@ public class WidgetUpdateTask implements Runnable {
                 PercentDifferencesRecord diffs = ohlcFutures.get(i).get();
                 analysisResults.add(new CoinAnalysisRecord(price, diffs));
             }
+            // clear error view first
+            RemoteViews errorViews = WidgetViewFactory.createErrorView(context, "", pendingIntentFactory);
+            appWidgetManager.updateAppWidget(appWidgetId, errorViews);
 
+            // update view
             RemoteViews updateViews = WidgetViewFactory.createSuccessView(context, analysisResults, pendingIntentFactory);
             appWidgetManager.updateAppWidget(appWidgetId, updateViews);
         } catch (Exception e) {

@@ -73,21 +73,27 @@ public class OHLCAnalysis {
         // Parse the OHLC data
         List<OHLCEntryRecord> ohlcEntries = parseOHLCData(rawResponse);
 
-        // Find the highest price in the last 24 hours
-        double high24h = findHighestHigh(ohlcEntries);
+        // Ensure data is sorted from oldest to newest
+        ohlcEntries.sort(Comparator.comparingLong(OHLCEntryRecord::timestamp));
 
-        // Find the highest price in the last 4 hours
-        List<OHLCEntryRecord> last4Hours = ohlcEntries.subList(Math.max(ohlcEntries.size() - 4, 0), ohlcEntries.size());
-        double high4h = findHighestHigh(last4Hours);
+        int totalEntries = ohlcEntries.size();
 
-        // Find the highest price in the last 1 hour
-        double high1h = ohlcEntries.get(ohlcEntries.size() - 1).high();
+        // Calculate indices for 24h, 4h, and 1h intervals
+        int index24h = Math.max(totalEntries - 24, 0);
+        int index4h = Math.max(totalEntries - 4, 0);
+        int index1h = Math.max(totalEntries - 1, 0);
+
+        // Get the closing prices at the start of each interval
+        double close24h = ohlcEntries.get(index24h).close();
+        double close4h = ohlcEntries.get(index4h).close();
+        double close1h = ohlcEntries.get(index1h).close();
 
         // Calculate percent differences
-        double diff24h = calculatePercentDifference(currentValue, high24h);
-        double diff4h = calculatePercentDifference(currentValue, high4h);
-        double diff1h = calculatePercentDifference(currentValue, high1h);
+        double diff24h = calculatePercentDifference(currentValue, close24h);
+        double diff4h = calculatePercentDifference(currentValue, close4h);
+        double diff1h = calculatePercentDifference(currentValue, close1h);
 
         return new PercentDifferencesRecord(diff24h, diff4h, diff1h);
     }
+
 }
