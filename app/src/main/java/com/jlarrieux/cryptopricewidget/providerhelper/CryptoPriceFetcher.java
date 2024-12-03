@@ -29,14 +29,23 @@ public class CryptoPriceFetcher {
     }
 
     public List<CryptoPriceRecord> fetchPrices(List<String> coins) throws JSONException, IOException {
+        // Encode coin IDs (only once)
         String coinIds = URLEncoder.encode(String.join(",", coins), StandardCharsets.UTF_8);
-        String url = BASE_URL + "/simple/price?ids=" + coinIds + "&" + "vs_currencies=usd" + X_CG_PRO_API_KEY + apiKey;
+
+        // Construct the full URL
+        String url = String.format(
+                "%s/simple/price?ids=%s&vs_currencies=usd%s%s",
+                BASE_URL, coinIds, X_CG_PRO_API_KEY, apiKey
+        );
+
         Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("url: %s", url));
 
+        // Make the HTTP request and parse the response
         String responseBody = makeRequest(url);
         return parsePrices(responseBody, coins);
-
     }
+
+
 
     public String fetchOHLC(String coin) throws IOException {
         String url = BASE_URL + "/coins/" + coin + "/ohlc?" + "vs_currency=usd" + "&days=1&interval=hourly" + X_CG_PRO_API_KEY + apiKey;
@@ -64,6 +73,29 @@ public class CryptoPriceFetcher {
     }
 
     private String makeRequest(String url) throws IOException {
+
+        try {
+            return executeRequest(url);
+        } catch (Exception e) {
+            Log.e(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("error: %s", e.getMessage()), e);
+            // Check if the error is related to DNS resolution
+            if (e.getMessage() != null && e.getMessage().contains("Unable to resolve host")) {
+                Log.w(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, "DNS resolution failed. Retrying with proxy.");
+
+                // Use the proxy if DNS resolution fails
+                String proxyBaseUrl = "https://caaqkesk23.execute-api.us-east-1.amazonaws.com/dev/proxy";
+                String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8);
+                String proxyUrl = String.format("%s?url=%s", proxyBaseUrl, encodedUrl);
+
+                return executeRequest(proxyUrl);
+            } else {
+                // Rethrow other exceptions
+                throw e;
+            }
+        }
+    }
+
+    private String executeRequest(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -71,6 +103,7 @@ public class CryptoPriceFetcher {
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) throw new IOException("Unexpected response: " + response);
 
+            assert response.body() != null;
             String responseBody = response.body().string();
             Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("responseBody: %s", responseBody));
             return responseBody;

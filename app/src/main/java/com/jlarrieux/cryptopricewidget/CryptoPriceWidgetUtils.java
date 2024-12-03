@@ -9,8 +9,10 @@ public final class CryptoPriceWidgetUtils {
             return String.format("$%,.2f", price);
         } else if (price >= 0.01) {
             return String.format("$%.3f", price);
-        } else {
+        } else if (price >=0.0001){
             return String.format("$%.4f", price);
+        } else {
+            return String.format("$%.6f", price);
         }
     }
 }

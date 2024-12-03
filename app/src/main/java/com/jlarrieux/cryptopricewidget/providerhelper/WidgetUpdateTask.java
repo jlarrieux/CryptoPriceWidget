@@ -70,7 +70,7 @@ public class WidgetUpdateTask implements Runnable {
             RemoteViews updateViews = WidgetViewFactory.createSuccessView(context, analysisResults, pendingIntentFactory);
             appWidgetManager.updateAppWidget(appWidgetId, updateViews);
         } catch (Exception e) {
-            Log.e("WidgetUpdateTask", "Error updating widget", e);
+            Log.e("WidgetUpdateTask", String.format("Error updating widget: %s", e.getMessage()), e);
             RemoteViews errorViews = WidgetViewFactory.createErrorView(context, e.getMessage(), pendingIntentFactory);
             appWidgetManager.updateAppWidget(appWidgetId, errorViews);
         }

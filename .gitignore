@@ -13,3 +13,17 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+
+# IntelliJ IDEA files
+.idea/
+
+# Build outputs
+/build/
+out/
+
+# OS-specific files
+*.log
+*.tmp
+
+# Optional: Add any other local config files not relevant to the team
