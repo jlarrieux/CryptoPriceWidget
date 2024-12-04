@@ -6,7 +6,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.jlarrieux.cryptopricewidget.record.CryptoPriceRecord;
-import com.jlarrieux.cryptopricewidget.record.PercentDifferencesRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferenceRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferencesDailyRecord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +39,17 @@ public class WidgetUpdateTask implements Runnable {
             List<CryptoPriceRecord> prices = cryptoPriceFetcher.fetchPrices(coins);
 
             // For each coin, fetch OHLC and calculate differences
-            List<CompletableFuture<PercentDifferencesRecord>> ohlcFutures = new ArrayList<>();
+            List<CompletableFuture<PercentDifferenceRecord>> ohlcFutures = new ArrayList<>();
             for(CryptoPriceRecord price : prices) {
-                CompletableFuture<PercentDifferencesRecord> future = CompletableFuture.supplyAsync(() -> {
+                CompletableFuture<PercentDifferenceRecord> future = CompletableFuture.supplyAsync(() -> {
                     try {
-                        String ohlcData = cryptoPriceFetcher.fetchOHLC(price.symbol());
-                        return OHLCAnalysis.computePercentDifferences(ohlcData, price.price());
+                        String ohlcData = cryptoPriceFetcher.fetchOHLC(price.symbol(), 1 , Interval.Hourly);
+                        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("Jeannius ohlcData 1: %s", ohlcData));
+                        String ohlcData2 = cryptoPriceFetcher.fetchOHLC(price.symbol(), 30, Interval.Daily);
+                        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("Jeannius ohlcData 2: %s", ohlcData2));
+                        return new PercentDifferenceRecord(
+                                OHLCAnalysis.computePercentDifferencesForDaily(ohlcData, price.price()),
+                                OHLCAnalysis.computePercentDifferencesForMonthly(ohlcData2, price.price()));
                     } catch (Exception e) {
                         Log.e("WidgetUpdateTask", "Error fetching OHLC for " + price.symbol(), e);
                         return null;
@@ -59,7 +65,7 @@ public class WidgetUpdateTask implements Runnable {
             List<CoinAnalysisRecord> analysisResults = new ArrayList<>();
             for(int i = 0; i < prices.size(); i++) {
                 CryptoPriceRecord price = prices.get(i);
-                PercentDifferencesRecord diffs = ohlcFutures.get(i).get();
+                PercentDifferenceRecord diffs = ohlcFutures.get(i).get();
                 analysisResults.add(new CoinAnalysisRecord(price, diffs));
             }
             // clear error view first

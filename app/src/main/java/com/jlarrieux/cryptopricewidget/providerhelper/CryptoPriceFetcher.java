@@ -1,5 +1,6 @@
 package com.jlarrieux.cryptopricewidget.providerhelper;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.jlarrieux.cryptopricewidget.record.CryptoPriceRecord;
@@ -45,15 +46,11 @@ public class CryptoPriceFetcher {
         return parsePrices(responseBody, coins);
     }
 
+    public String fetchOHLC(String coin, int days, Interval interval) throws IOException {
+        @SuppressLint("DefaultLocale")
+        String url  =String.format("%s/coins/%s/ohlc?vs_currency=usd&days=%d&interval=%s%s%s", BASE_URL, coin, days, interval.getValue(), X_CG_PRO_API_KEY, apiKey);
 
-
-    public String fetchOHLC(String coin) throws IOException {
-        String url = BASE_URL + "/coins/" + coin + "/ohlc?" + "vs_currency=usd" + "&days=1&interval=hourly" + X_CG_PRO_API_KEY + apiKey;
-        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("url: %s", url));
-
-        String responseBody = makeRequest(url);
-        Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("responsebody from OHLC", responseBody));
-        return responseBody;
+        return makeRequest(url);
     }
 
 
@@ -105,7 +102,7 @@ public class CryptoPriceFetcher {
 
             assert response.body() != null;
             String responseBody = response.body().string();
-            Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("responseBody: %s", responseBody));
+//            Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("responseBody: %s", responseBody));
             return responseBody;
         }
     }

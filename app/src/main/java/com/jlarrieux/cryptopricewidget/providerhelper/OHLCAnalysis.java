@@ -5,7 +5,8 @@ import android.util.Log;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jlarrieux.cryptopricewidget.record.OHLCEntryRecord;
-import com.jlarrieux.cryptopricewidget.record.PercentDifferencesRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferenceMonthlyRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferencesDailyRecord;
 
 import java.util.Comparator;
 import java.util.List;
@@ -68,7 +69,7 @@ public class OHLCAnalysis {
      * @param currentValue The current price value.
      * @return A PercentDifferences record containing the percent differences.
      */
-    public static PercentDifferencesRecord computePercentDifferences(String rawResponse, double currentValue) {
+    public static PercentDifferencesDailyRecord computePercentDifferencesForDaily(String rawResponse, double currentValue) {
         Log.i(CryptoPriceWidgetConstants.CRYPTO_PRICE_WIDGET, String.format("Analysis currentPrice: %f", currentValue));
         // Parse the OHLC data
         List<OHLCEntryRecord> ohlcEntries = parseOHLCData(rawResponse);
@@ -93,7 +94,32 @@ public class OHLCAnalysis {
         double diff4h = calculatePercentDifference(currentValue, close4h);
         double diff1h = calculatePercentDifference(currentValue, close1h);
 
-        return new PercentDifferencesRecord(diff24h, diff4h, diff1h);
+        return new PercentDifferencesDailyRecord(diff24h, diff4h, diff1h);
     }
+
+    /**
+     * Computes percent differences for 1month and 1week intervals using the specified criteria.
+     *
+     * @param rawResponse list of OHLC data arrays
+     * @param currentValue the current price value
+     * @return a PercentDifferences record containing the percent differences
+     */
+    public static PercentDifferenceMonthlyRecord computePercentDifferencesForMonthly(String rawResponse, double currentValue) {
+        List<OHLCEntryRecord> ohlcEntries = parseOHLCData(rawResponse);
+        ohlcEntries.sort(Comparator.comparingLong(OHLCEntryRecord::timestamp));
+
+        int totalEntries = ohlcEntries.size();
+        int index1m = Math.max(totalEntries - 30, 0); // Approx. 1 month
+        int index1w = Math.max(totalEntries - 7, 0);  // Approx. 1 week
+
+        double close1m = ohlcEntries.get(index1m).close();
+        double close1w = ohlcEntries.get(index1w).close();
+
+        double diff1m = calculatePercentDifference(currentValue, close1m);
+        double diff1w = calculatePercentDifference(currentValue, close1w);
+
+        return new PercentDifferenceMonthlyRecord(diff1m, diff1w);
+    }
+
 
 }

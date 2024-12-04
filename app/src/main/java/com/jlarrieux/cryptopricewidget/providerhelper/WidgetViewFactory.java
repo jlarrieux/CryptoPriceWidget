@@ -1,6 +1,7 @@
 package com.jlarrieux.cryptopricewidget.providerhelper;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -10,10 +11,14 @@ import android.widget.Toast;
 
 import com.jlarrieux.cryptopricewidget.CryptoPriceWidgetUtils;
 import com.jlarrieux.cryptopricewidget.R;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferenceMonthlyRecord;
+import com.jlarrieux.cryptopricewidget.record.PercentDifferencesDailyRecord;
 
 import java.util.List;
 
 public class WidgetViewFactory {
+
+    public static final String PercentFormat = "%.1f%%";
 
     public static RemoteViews createLoadingView(Context context, PendingIntentFactory pendingIntentFactory) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
@@ -23,6 +28,7 @@ public class WidgetViewFactory {
         views.setViewVisibility(R.id.progress_bar, View.VISIBLE);
         return views;
     }
+
 
     public static RemoteViews createSuccessView(Context context,
                                                 List<CoinAnalysisRecord> analyses,
@@ -43,25 +49,46 @@ public class WidgetViewFactory {
 
             // Set analysis info if available
             if (analysis.analysis() != null) {
-                // Ensure we're using String.format to avoid null values
-                String diff24h = String.format("%.1f%%", analysis.analysis().diff24h());
-                String diff4h = String.format("%.1f%%", analysis.analysis().diff4h());
-                String diff1h = String.format("%.1f%%", analysis.analysis().diff1h());
+                handleDailyPercent(analysis.analysis().dailyRecord(), priceView);
+                handleMonthlyPercent(analysis.analysis().monthlyRecord(), priceView);
 
-                // Set text with null checks
-                if (diff24h != null) priceView.setTextViewText(R.id.diff_24h, diff24h);
-                if (diff4h != null) priceView.setTextViewText(R.id.diff_4h, diff4h);
-                if (diff1h != null) priceView.setTextViewText(R.id.diff_1h, diff1h);
-
-                // Set colors with null checks
-                setDiffColor(priceView, R.id.diff_24h, analysis.analysis().diff24h());
-                setDiffColor(priceView, R.id.diff_4h, analysis.analysis().diff4h());
-                setDiffColor(priceView, R.id.diff_1h, analysis.analysis().diff1h());
             }
 
             views.addView(R.id.price_container, priceView);
         }
         return views;
+    }
+
+    @SuppressLint("DefaultLocale")
+    private static void handleDailyPercent(PercentDifferencesDailyRecord dailyRecord, RemoteViews priceView) {
+
+        // Ensure we're using String.format to avoid null values
+
+        String diff24h = String.format(PercentFormat, dailyRecord.diff24h());
+        String diff4h = String.format(PercentFormat, dailyRecord.diff4h());
+        String diff1h = String.format(PercentFormat, dailyRecord.diff1h());
+
+        // Set text with null checks
+        priceView.setTextViewText(R.id.diff_24h, diff24h);
+        priceView.setTextViewText(R.id.diff_4h, diff4h);
+        priceView.setTextViewText(R.id.diff_1h, diff1h);
+
+        // Set colors with null checks
+        setDiffColor(priceView, R.id.diff_24h, dailyRecord.diff24h());
+        setDiffColor(priceView, R.id.diff_4h, dailyRecord.diff4h());
+        setDiffColor(priceView, R.id.diff_1h, dailyRecord.diff1h());
+    }
+
+    @SuppressLint("DefaultLocale")
+    private static void handleMonthlyPercent(PercentDifferenceMonthlyRecord monthlyRecord, RemoteViews priceView){
+        String diff1m = String.format(PercentFormat, monthlyRecord.diff1Month());
+        String diff1w = String.format(PercentFormat, monthlyRecord.diff1Week());
+
+        priceView.setTextViewText(R.id.diff_1m, diff1m);
+        priceView.setTextViewText(R.id.diff_1w, diff1w);
+
+        setDiffColor(priceView, R.id.diff_1m, monthlyRecord.diff1Month());
+        setDiffColor(priceView, R.id.diff_1w, monthlyRecord.diff1Week());
     }
 
     private static void setDiffColor(RemoteViews views, int viewId, double value) {
